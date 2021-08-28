@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from models.user import User
 
-Network = Blueprint('Network', __name__, url_prefix='/api')
+Network = Blueprint('Network', __name__)
 
 @Network.route('/network')
 def network():

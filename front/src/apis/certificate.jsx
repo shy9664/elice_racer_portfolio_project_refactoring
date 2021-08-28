@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getCertificates = async (userId) => {
 
-  const url = 'kdt-1st-project-74.koreacentral.cloudapp.azure.com/api/portfolio/certificate'
+  const url = 'http://127.0.0.1:5000/portfolio/certificate';
 
   const res = await axios.get(url, {params: {id:userId}})
   
@@ -11,7 +11,7 @@ export const getCertificates = async (userId) => {
 
 
 export const updateCertificates = async (certId, editedCertificateData) => {
-  const url = 'kdt-1st-project-74.koreacentral.cloudapp.azure.com/api/portfolio/certificate'
+  const url = 'http://127.0.0.1:5000/portfolio/certificate'
 
   let form = new FormData()
 
@@ -27,7 +27,7 @@ export const updateCertificates = async (certId, editedCertificateData) => {
 
 export const addCertificates = async (userId, newCertificateData) => {  
 
-  const url = 'kdt-1st-project-74.koreacentral.cloudapp.azure.com/api/portfolio/certificate'
+  const url = 'http://127.0.0.1:5000/portfolio/certificate'
 
   let form = new FormData()
   form.append('title', newCertificateData.title)
@@ -42,7 +42,7 @@ export const addCertificates = async (userId, newCertificateData) => {
 
 export const deleteCertificates = async (certId) => {
 
-  const url = 'kdt-1st-project-74.koreacentral.cloudapp.azure.com/api/portfolio/certificate'
+  const url = 'http://127.0.0.1:5000/portfolio/certificate'
 
   await axios.delete(url, {params: {cert_id: certId}})
   

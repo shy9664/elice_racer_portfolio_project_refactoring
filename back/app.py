@@ -33,4 +33,4 @@ app.config['SECRET_KEY'] = secret_key
 
 db.init_app(app)
 
-app.run()
+app.run(debug=True)

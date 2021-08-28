@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.achievement import Achievement
 from db_connect import db
 
-achievement = Blueprint('achievement', __name__, url_prefix='/api/portfolio')
+achievement = Blueprint('achievement', __name__, url_prefix='/portfolio')
 
 @achievement.route('/achievement', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def achievements():

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.certificate import Certificate
 from db_connect import db
 
-certificate = Blueprint('certificate', __name__, url_prefix='/api/portfolio')
+certificate = Blueprint('certificate', __name__, url_prefix='/portfolio')
 
 @certificate.route('/certificate', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def certificates():

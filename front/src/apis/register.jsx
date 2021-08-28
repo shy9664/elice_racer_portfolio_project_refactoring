@@ -1,8 +1,9 @@
 import axios from "axios"
+import BACKEND_URL from "../env";
 
 const register = async (registerForm) => {
     
-    const url = 'http://127.0.0.1:5000/register';
+    const url = `${BACKEND_URL}/register`;
     let form = new FormData()
     form.append('user_id', registerForm.userId)
     form.append('user_pw', registerForm.userPw)

@@ -1,8 +1,9 @@
 import axios from "axios"
+import BACKEND_URL from "../env";
 
 const register = async (registerForm) => {
     
-    const url = 'kdt-1st-project-74.koreacentral.cloudapp.azure.com/api/register'; 
+    const url = `${BACKEND_URL}/register`;
     let form = new FormData()
     form.append('user_id', registerForm.userId)
     form.append('user_pw', registerForm.userPw)

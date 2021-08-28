@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, session
 
-Logout = Blueprint('Logout', __name__, url_prefix='/api')
+Logout = Blueprint('Logout', __name__)
 
 @Logout.route('/logout')
 def logout():

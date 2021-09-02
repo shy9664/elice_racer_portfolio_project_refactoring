@@ -16,24 +16,22 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
   
   const [addedCertificateData, setAddedCertificateData] = useState({title:'', organization:'', date:''});
 
-  const handleChange = e => {
+  const handleChange = e => {   // 입력할 때마다 변경되게. 
     const {name, value} = e.target;
     const newCertificateData = {...addedCertificateData};
     newCertificateData[name] = value;
     setAddedCertificateData(newCertificateData)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    addCertificates(userId, addedCertificateData)  // POST로 자격증 추가함
-    setAddedCertificateData(addedCertificateData)  // ?
+    await addCertificates(userId, addedCertificateData)  // POST로 자격증 추가함
+    // setAddedCertificateData(addedCertificateData)  // ?
     const addedCertificateDatas = [...certificateDatas, addedCertificateData]
-    setCertificateDatas(addedCertificateDatas)
-    setAddedCertificateData({title:'', organization:'', date:''})
+    setCertificateDatas(addedCertificateDatas)  // 부모컴포넌트 재렌더링. 그렇다고 fetch하지는 않음 그럼.. 쓸모없지않나 
+    setAddedCertificateData({title:'', organization:'', date:''})  // 다시 공란으로 초기화
     setAddState(addState => {
-      console.log('addsucced')
       return !addState})
-    console.log('addsucced2')
   }
 
   return (
@@ -77,10 +75,9 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
     setEditedCertificateData(newCertificateData)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {  // 이것들도 await 하위에 다 then으로 해줘야하나? add도글코..
     e.preventDefault()
-
-    updateCertificates(id, editedCertificateData)
+    await updateCertificates(id, editedCertificateData)
     const editCompleteData = [...certificateDatas] 
     editCompleteData.splice(index, 1, editedCertificateData)
     setCertificateDatas(editCompleteData)
@@ -122,7 +119,7 @@ const Certificate = ({userId, isLoggedUser}) => {
 
   const [addState, setAddState] = useState(false)
 
-  const [certificateDatas, setCertificateDatas] = useState([]);
+  const [certificateDatas, setCertificateDatas] = useState([]);  // 이게 필요가없는거같은데? 
 
   useEffect(() => {
     fetchCertificateDatas()
@@ -131,17 +128,17 @@ const Certificate = ({userId, isLoggedUser}) => {
   useEffect(() => {  // 추가했을 때 재렌더링되도록.. 근데 왜 true일때 정상작동하는것처럼 보이지? false를 유도해야하는데. 그래서.. 새로 추가한건 id가 없음.. 해결못함.. 
     if (addState === false) {
     fetchCertificateDatas()
-    console.log('add fetch')}
+    }
   }, [addState])
 
   // const fetchCertificateDatas = async () => {
   //   const gotCertificateDatas = await getCertificates(userId)
   //   setCertificateDatas(gotCertificateDatas)
   // }
-  const fetchCertificateDatas = () => {
-    getCertificates(userId)
+  const fetchCertificateDatas = async () => {
+    await getCertificates(userId)
     .then(gotCertificateDatas => setCertificateDatas(gotCertificateDatas))   // 위에것을 일케 바꿈
-  }
+  }                                // 이건 함수니까 .then붙여서 이렇게 사용할 수 있는거.
 
   // const handleAddBtn = () => {
   //   setAddState(!addState) // 여기서 금방 안바뀌네? 
@@ -152,7 +149,16 @@ const Certificate = ({userId, isLoggedUser}) => {
 
   const certificateDataslist = certificateDatas.map((certificateData, i) => 
       <div key={i}>    
-        <CertificatePiece index={i} id={certificateData.id} title={certificateData.title} organization={certificateData.organization} date={certificateData.date} userId={userId} isLoggedUser={isLoggedUser} certificateDatas={certificateDatas} setCertificateDatas={setCertificateDatas}/>
+        <CertificatePiece 
+        index={i} 
+        id={certificateData.id} 
+        title={certificateData.title} 
+        organization={certificateData.organization} 
+        date={certificateData.date} 
+        userId={userId} 
+        isLoggedUser={isLoggedUser} 
+        certificateDatas={certificateDatas} 
+        setCertificateDatas={setCertificateDatas}/>
       </div>
     );
 
@@ -161,7 +167,12 @@ const Certificate = ({userId, isLoggedUser}) => {
       <h3>자격증</h3>
       {certificateDatas && certificateDataslist}
       {(userId === isLoggedUser) && !addState ? <button onClick={handleAddBtn}>자격증 추가하기</button> : null}
-      <NewCertificate addState={addState} setAddState={setAddState} userId={userId} setCertificateDatas={setCertificateDatas} certificateDatas={certificateDatas} />
+      <NewCertificate 
+      addState={addState} 
+      setAddState={setAddState} 
+      userId={userId} 
+      setCertificateDatas={setCertificateDatas} 
+      certificateDatas={certificateDatas} />
     </StyledCertificate>
   )
 }

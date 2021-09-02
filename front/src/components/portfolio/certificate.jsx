@@ -30,8 +30,7 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
     const addedCertificateDatas = [...certificateDatas, addedCertificateData]
     setCertificateDatas(addedCertificateDatas)  // 부모컴포넌트 재렌더링. 그렇다고 fetch하지는 않음 그럼.. 쓸모없지않나 
     setAddedCertificateData({title:'', organization:'', date:''})  // 다시 공란으로 초기화
-    setAddState(addState => {
-      return !addState})
+    setAddState(addState => {return !addState})
   }
 
   return (
@@ -59,13 +58,13 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
   )
 }
 
-const CertificatePiece = ({index, id, title, organization, date, userId, isLoggedUser, certificateDatas, setCertificateDatas}) => { 
+const CertificatePiece = ({index, id, title, organization, date, userId, isLoggedUser, certificateDatas, setCertificateDatas, editState, setEditState}) => { 
 
-  const [editState, setEditState] = useState(false) 
   const [editedCertificateData, setEditedCertificateData] = useState({id, title, organization, date}); // id도 넣어줘야함 !! 지못미 내로직..
+  const [oneEditedState, setOneEditedState] = useState(true);
 
-  const handleEdit = () => {
-    setEditState(!editState)
+  const handleEditBtn = () => {
+    setOneEditedState(oneEditedState => !oneEditedState)
   }
 
   const handleChange = e => {
@@ -77,26 +76,32 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
 
   const handleSubmit = async (e) => {  // 이것들도 await 하위에 다 then으로 해줘야하나? add도글코..
     e.preventDefault()
+    console.log(id)
     await updateCertificates(id, editedCertificateData)
-    const editCompleteData = [...certificateDatas] 
+    const editCompleteData = [...certificateDatas]   // 이것도 결국 의미 없는거아닌간 ..? 그냥 fetch시키니까
     editCompleteData.splice(index, 1, editedCertificateData)
     setCertificateDatas(editCompleteData)
-    setEditState(!editState);
+    setEditState(editState => !editState)
+    setOneEditedState(oneEditedState => !oneEditedState)
   }
 
-  const handleDeleteBtn = () => {
-    deleteCertificates(id)
-    window.location.reload()
+  const handleDeleteBtn = async () => {
+    await deleteCertificates(id)
+    const editCompleteData = [...certificateDatas] 
+    editCompleteData.splice(index, 1)
+    setCertificateDatas(editCompleteData)
+    setEditState(editState => !editState)
+    setOneEditedState(oneEditedState => !oneEditedState)
   }
 
   return (
   <StyledCertificatePiece>
-    {!editState ?
+    {oneEditedState ?
     <div>
       <p>자격증 명: {title}</p>
       <p>발급 기관 :{organization}</p>
       <p>취득 날짜: {date}</p>
-      {userId === isLoggedUser && <button onClick={handleEdit}>편집하기</button> }
+      {userId === isLoggedUser && <button onClick={handleEditBtn}>편집하기</button> }
     </div>
     :
     <form onSubmit={handleSubmit}>
@@ -118,18 +123,19 @@ const Certificate = ({userId, isLoggedUser}) => {
   
 
   const [addState, setAddState] = useState(false)
+  const [editState, setEditState] = useState(false)   // editState라고 명명할 필요는 없을듯. 그냥 토글
 
   const [certificateDatas, setCertificateDatas] = useState([]);  // 이게 필요가없는거같은데? 
 
-  useEffect(() => {
-    fetchCertificateDatas()
-}, [])
+//   useEffect(() => {
+//     fetchCertificateDatas()
+// }, [])
 
-  useEffect(() => {  // 추가했을 때 재렌더링되도록.. 근데 왜 true일때 정상작동하는것처럼 보이지? false를 유도해야하는데. 그래서.. 새로 추가한건 id가 없음.. 해결못함.. 
-    if (addState === false) {
+  useEffect(() => {  
+    if (addState === false || editState === false) {  // 추가한 녀석도 id를 부여하기 위해 다시 fetch하고, update도 마찬가지.
     fetchCertificateDatas()
     }
-  }, [addState])
+  }, [addState, editState])
 
   // const fetchCertificateDatas = async () => {
   //   const gotCertificateDatas = await getCertificates(userId)
@@ -158,7 +164,9 @@ const Certificate = ({userId, isLoggedUser}) => {
         userId={userId} 
         isLoggedUser={isLoggedUser} 
         certificateDatas={certificateDatas} 
-        setCertificateDatas={setCertificateDatas}/>
+        setCertificateDatas={setCertificateDatas}
+        editState={editState}
+        setEditState={setEditState}/>
       </div>
     );
 

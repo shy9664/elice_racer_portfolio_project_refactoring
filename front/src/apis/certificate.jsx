@@ -7,7 +7,9 @@ export const getCertificates = async (userId) => {
 
   const res = await axios.get(url, {params: {id:userId}})
   console.log('get', res.status)
+  console.log('getData', res.data.data)
   return res.data.data
+
 }
 
 

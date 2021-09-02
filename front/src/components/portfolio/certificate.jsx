@@ -25,8 +25,8 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    addCertificates(userId, addedCertificateData)
-    setAddedCertificateData(addedCertificateData)
+    addCertificates(userId, addedCertificateData)  // POST로 자격증 추가함
+    setAddedCertificateData(addedCertificateData)  // ?
     const addedCertificateDatas = [...certificateDatas, addedCertificateData]
     setCertificateDatas(addedCertificateDatas)
     setAddedCertificateData({title:'', organization:'', date:''})
@@ -81,11 +81,7 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
     e.preventDefault()
 
     updateCertificates(id, editedCertificateData)
-    // setEditedCertificateData(editedCertificateData)  // set을해도, 부모가 넘겨주는 데이터가 동일하기때문에 안바뀌는듯. 
-    //아. 화면상에서만 바꿀게 아니라,,, 부모컴포넌트에서 넘겨주는 데이터에서 그 인덱스에 맞는 컴포넌트를 수정하도록 해야되네. 
-    //근데 그럴려면.. 부모컴포넌트에서 넘겨주는 데이터의 인덱스에 대한 자료가 바뀌려면,, 
-    //실제 데이터가 달라야함.. 아. 부모의 state인 certificateDatas를 바꾸면 되려나? 
-    const editCompleteData = [...certificateDatas] // 여기서는 또 없는 id인것을 받아와버리니까..!
+    const editCompleteData = [...certificateDatas] 
     editCompleteData.splice(index, 1, editedCertificateData)
     setCertificateDatas(editCompleteData)
     setEditState(!editState);
@@ -128,7 +124,7 @@ const Certificate = ({userId, isLoggedUser}) => {
 
   const [certificateDatas, setCertificateDatas] = useState([]);
 
-  useEffect(() => {  // 이걸 다른 포트폴리오 정보들과 묶어서 한 번에 했어야 했음. 메인페이지 같은 데서. 
+  useEffect(() => {
     fetchCertificateDatas()
 }, [])
 
@@ -150,7 +146,6 @@ const Certificate = ({userId, isLoggedUser}) => {
   // const handleAddBtn = () => {
   //   setAddState(!addState) // 여기서 금방 안바뀌네? 
   // }
-  
   const handleAddBtn = () => {
     setAddState((addState) => {return !addState})      // 바로 변경이 안되네.. 계속.. 
   }

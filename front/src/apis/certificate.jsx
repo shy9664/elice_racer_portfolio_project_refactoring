@@ -6,6 +6,7 @@ export const getCertificates = async (userId) => {
   const url = `${BACKEND_URL}/portfolio/certificate`
 
   const res = await axios.get(url, {params: {id:userId}})
+  console.log('get', res.data.data)
   
   return res.data.data
 }

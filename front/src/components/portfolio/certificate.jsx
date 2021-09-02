@@ -30,7 +30,10 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
     const addedCertificateDatas = [...certificateDatas, addedCertificateData]
     setCertificateDatas(addedCertificateDatas)
     setAddedCertificateData({title:'', organization:'', date:''})
-    setAddState(!addState)
+    setAddState(addState => {
+      console.log('addsucced')
+      return !addState})
+    console.log('addsucced2')
   }
 
   return (
@@ -120,6 +123,7 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
 
 const Certificate = ({userId, isLoggedUser}) => {
   
+
   const [addState, setAddState] = useState(false)
 
   const [certificateDatas, setCertificateDatas] = useState([]);
@@ -129,19 +133,28 @@ const Certificate = ({userId, isLoggedUser}) => {
 }, [])
 
   useEffect(() => {  // 추가했을 때 재렌더링되도록.. 근데 왜 true일때 정상작동하는것처럼 보이지? false를 유도해야하는데. 그래서.. 새로 추가한건 id가 없음.. 해결못함.. 
-    if (addState === true) {
-    fetchCertificateDatas()}
+    if (addState === false) {
+    fetchCertificateDatas()
+    console.log('add fetch')}
   }, [addState])
 
-  const fetchCertificateDatas = async () => {
-    const gotCertificateDatas = await getCertificates(userId)
-    setCertificateDatas(gotCertificateDatas)
+  // const fetchCertificateDatas = async () => {
+  //   const gotCertificateDatas = await getCertificates(userId)
+  //   setCertificateDatas(gotCertificateDatas)
+  // }
+  const fetchCertificateDatas = () => {
+    getCertificates(userId)
+    .then(gotCertificateDatas => setCertificateDatas(gotCertificateDatas))   // 위에것을 일케 바꿈
   }
 
-  const handleAddBtn = () => {
-    setAddState(!addState)
-  }
+  // const handleAddBtn = () => {
+  //   setAddState(!addState) // 여기서 금방 안바뀌네? 
+  // }
   
+  const handleAddBtn = () => {
+    setAddState((addState) => {return !addState})      // 바로 변경이 안되네.. 계속.. 
+  }
+
   const certificateDataslist = certificateDatas.map((certificateData, i) => 
       <div key={i}>    
         <CertificatePiece index={i} id={certificateData.id} title={certificateData.title} organization={certificateData.organization} date={certificateData.date} userId={userId} isLoggedUser={isLoggedUser} certificateDatas={certificateDatas} setCertificateDatas={setCertificateDatas}/>

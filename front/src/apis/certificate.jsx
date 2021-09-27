@@ -6,9 +6,9 @@ export const getCertificates = async (userId) => {
   const url = `${BACKEND_URL}/portfolio/certificate`
 
   const res = await axios.get(url, {params: {id:userId}})
-  console.log('get', res.status)
-  console.log('getData', res.data.data)
+  console.log('get')
   return res.data.data
+  
 
 }
 
@@ -22,8 +22,7 @@ export const updateCertificates = async (certId, editedCertificateData) => {
   form.append('date', editedCertificateData.date)
   form.append('id', certId)
 
-  const res = await axios.patch(url, form)
-  console.log('update', res.status)
+  await axios.patch(url, form)
   return
 }
 
@@ -38,8 +37,7 @@ export const addCertificates = async (userId, newCertificateData) => {
   form.append('date', newCertificateData.date)
   form.append('user_id', userId)
 
-  const res = await axios.post(url, form)
-  console.log('post', res.status)
+  await axios.post(url, form)
   return 
 }
 

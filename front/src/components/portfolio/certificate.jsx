@@ -16,24 +16,21 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
   
   const [addedCertificateData, setAddedCertificateData] = useState({title:'', organization:'', date:''});
 
-  const handleChange = e => {
+  const handleChange = e => {   // 입력할 때마다 변경되게. 
     const {name, value} = e.target;
     const newCertificateData = {...addedCertificateData};
     newCertificateData[name] = value;
     setAddedCertificateData(newCertificateData)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    addCertificates(userId, addedCertificateData)
-    setAddedCertificateData(addedCertificateData)
+    await addCertificates(userId, addedCertificateData)  // POST로 자격증 추가함 axios쓰는건 await해줘야하는듯 이런데서도
+    // setAddedCertificateData(addedCertificateData)  // ?
     const addedCertificateDatas = [...certificateDatas, addedCertificateData]
-    setCertificateDatas(addedCertificateDatas)
-    setAddedCertificateData({title:'', organization:'', date:''})
-    setAddState(addState => {
-      console.log('addsucced')
-      return !addState})
-    console.log('addsucced2')
+    setCertificateDatas(addedCertificateDatas)  // 부모컴포넌트 재렌더링. 그렇다고 fetch하지는 않음 그럼.. 쓸모없지않나 
+    setAddedCertificateData({title:'', organization:'', date:''})  // 다시 공란으로 초기화
+    setAddState(addState => {return !addState})
   }
 
   return (
@@ -61,13 +58,39 @@ const NewCertificate = ({addState, setAddState, userId, setCertificateDatas, cer
   )
 }
 
-const CertificatePiece = ({index, id, title, organization, date, userId, isLoggedUser, certificateDatas, setCertificateDatas}) => { 
+const CertificatePiece = ({index, id, title, organization, date, userId, isLoggedUser, certificateDatas, setCertificateDatas, editState, setEditState}) => { 
 
-  const [editState, setEditState] = useState(false) 
+
+  // useEffect(() => {
+  //   return null; // 이 단계에서 자기자신이 삭제되도록. 자기자신이 삭제(unmount) 되었을 때 아무것도 나타내지 않도록.
+  // })
+  // unmount 문제라면 useEffect로 해결을...?? 아니 애초에.. 조각들은 useEffect로 했어야..했나? 독립적으로..? 
+  // 아냐.. 윗 단계인 부모컴포넌트에서 useEffect를 해줘야하나? 
+  // 아냐 음 .. editedCertificateData useState에 index도 넣어주면 되려나?
+  // 애초에 여기에 editedCertificateData를 넣으면 안되는 거였나? 
+  // 그니까 음 .. 편집 상태인 form같은 별도의 컴포넌트로 분리시키는거지. 
+  // 근데 이 컴포넌트를 삭제(unmount)했을 때 살아있다? 는 게 문제인 것 같은데 .. 
+  
   const [editedCertificateData, setEditedCertificateData] = useState({id, title, organization, date}); // id도 넣어줘야함 !! 지못미 내로직..
+  const [oneEditedState, setOneEditedState] = useState(true);
+  const [alive, setAlive] = useState(true);
 
-  const handleEdit = () => {
-    setEditState(!editState)
+  console.log(editedCertificateData)    // 아 찾았다. 이게 문제다. 이거때문에 계속 그.. 이전것으로 편집데이터가 유지된다. 그리고.. 그 상태도. 
+                                        // unmounted component 문제인가? 근데 애초에.. 음.. unmount되는거같지가않은데.. 음..? 아닌가?.,.
+                                        // 근데 애초에 음 .. 재렌더링이 제대로 작동한다면.. 관계없어야할 문제아닌가?
+                                        // 근데 사실 재렌더링은 제대로 되거든.. 
+                                        // 그럼.. 재렌더링되더라도 그 편집 데이터는 남아있기때문인데.. 
+                                        // 그 편집 데이터가 왜 남아있냐면 각 자격증(컴포넌트)이 독립적이지 않아서 .. ?
+                                        // 편집하기 버튼을 눌렀을 때, editedCertificateData가 되어버리고, 
+                                        // 그걸 삭제하고 난 뒤, 그 다음의 것을 눌렀을 때 이전의 editedCertificateData가 되버린다?
+                                        // 혹은, 그 자리에 원래 컴포넌트의 데이터가 남게된다? 
+                                        // 아 아냐아냐 모두 다 취소하고, 
+                                        // 처음에 렌더링될 때 각 컴포넌트의 editedCertificateData가 결정되어버림 ㅇㅇ 
+                                        // 그래서, 어떤 것을 삭제하고 눌렀을 때, 이미 결정된 editedCertificateData가 보여지는것!!
+                                        // 그럼 음 .. useEffect로 하고, unmount를 해야하나?
+                                        // 컴포넌트 삭제는.. props로부터물려받지 못햇을때 자연스럽게 삭제되는 것..?
+  const handleEditBtn = () => {
+    setOneEditedState(oneEditedState => !oneEditedState)
   }
 
   const handleChange = e => {
@@ -77,33 +100,35 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
     setEditedCertificateData(newCertificateData)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {  // 이것들도 await 하위에 다 then으로 해줘야하나? add도글코..
     e.preventDefault()
-
-    updateCertificates(id, editedCertificateData)
-    // setEditedCertificateData(editedCertificateData)  // set을해도, 부모가 넘겨주는 데이터가 동일하기때문에 안바뀌는듯. 
-    //아. 화면상에서만 바꿀게 아니라,,, 부모컴포넌트에서 넘겨주는 데이터에서 그 인덱스에 맞는 컴포넌트를 수정하도록 해야되네. 
-    //근데 그럴려면.. 부모컴포넌트에서 넘겨주는 데이터의 인덱스에 대한 자료가 바뀌려면,, 
-    //실제 데이터가 달라야함.. 아. 부모의 state인 certificateDatas를 바꾸면 되려나? 
-    const editCompleteData = [...certificateDatas] // 여기서는 또 없는 id인것을 받아와버리니까..!
+    await updateCertificates(id, editedCertificateData)
+    const editCompleteData = [...certificateDatas]   // 이것도 결국 의미 없는거아닌간 ..? 그냥 fetch시키니까
     editCompleteData.splice(index, 1, editedCertificateData)
     setCertificateDatas(editCompleteData)
-    setEditState(!editState);
+    setEditState(editState => !editState)
+    setOneEditedState(oneEditedState => !oneEditedState)
   }
 
-  const handleDeleteBtn = () => {
-    deleteCertificates(id)
-    window.location.reload()
+  const handleDeleteBtn = async () => {
+    await deleteCertificates(id)
+    // const editCompleteData = [...certificateDatas] 
+    // editCompleteData.splice(index, 1)
+    // setCertificateDatas(editCompleteData)
+    // setEditState(editState => !editState)
+    // setOneEditedState(oneEditedState => !oneEditedState)
+    setAlive(alive => !alive)  // 아 .. 그냥 이렇게 삭제시킴..  위에거 주석처리한건, 한번에 두개가 삭제되게 되어버리기 때문.. 
+                              // 애초에 내 로직은 삭제시킬 필요가 있는게 아니라.. 그냥 state에 따라 렌더링 되는.. 야매로 해버린건가.. 
   }
 
-  return (
+  return alive ? (
   <StyledCertificatePiece>
-    {!editState ?
+    {oneEditedState ?
     <div>
       <p>자격증 명: {title}</p>
       <p>발급 기관 :{organization}</p>
       <p>취득 날짜: {date}</p>
-      {userId === isLoggedUser && <button onClick={handleEdit}>편집하기</button> }
+      {userId === isLoggedUser && <button onClick={handleEditBtn}>편집하기</button> }
     </div>
     :
     <form onSubmit={handleSubmit}>
@@ -118,46 +143,59 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
     </form>
     }
   </StyledCertificatePiece>
-  )
+  ) : null 
 }
 
 const Certificate = ({userId, isLoggedUser}) => {
   
 
   const [addState, setAddState] = useState(false)
+  const [editState, setEditState] = useState(false)   // editState라고 명명할 필요는 없을듯. 그냥 토글
 
-  const [certificateDatas, setCertificateDatas] = useState([]);
+  const [certificateDatas, setCertificateDatas] = useState([]);  // 이게 필요가없는거같은데? 
 
-  useEffect(() => {  // 이걸 다른 포트폴리오 정보들과 묶어서 한 번에 했어야 했음. 메인페이지 같은 데서. 
-    fetchCertificateDatas()
-}, [])
+//   useEffect(() => {
+//     fetchCertificateDatas()
+// }, [])
 
-  useEffect(() => {  // 추가했을 때 재렌더링되도록.. 근데 왜 true일때 정상작동하는것처럼 보이지? false를 유도해야하는데. 그래서.. 새로 추가한건 id가 없음.. 해결못함.. 
-    if (addState === false) {
-    fetchCertificateDatas()
-    console.log('add fetch')}
-  }, [addState])
 
-  // const fetchCertificateDatas = async () => {
-  //   const gotCertificateDatas = await getCertificates(userId)
-  //   setCertificateDatas(gotCertificateDatas)
-  // }
-  const fetchCertificateDatas = () => {
-    getCertificates(userId)
-    .then(gotCertificateDatas => setCertificateDatas(gotCertificateDatas))   // 위에것을 일케 바꿈
+
+  const fetchCertificateDatas = async () => {
+    const gotCertificateDatas = await getCertificates(userId)
+    setCertificateDatas(gotCertificateDatas)
   }
+  // const fetchCertificateDatas = async () => {
+  //   await getCertificates(userId)
+  //   .then(gotCertificateDatas => setCertificateDatas(gotCertificateDatas))   // 위에것을 일케 바꿈
+  // }                                // 이건 함수니까 .then붙여서 이렇게 사용할 수 있는거. 근데.. 위에께 더 맞는 ..? 듯? 
+
+  useEffect(() => {  
+    if (addState === false || editState === false) {  // 추가한 녀석도 id를 부여하기 위해 다시 fetch하고, update도 마찬가지.
+    fetchCertificateDatas()
+    }
+  }, [addState, editState])
 
   // const handleAddBtn = () => {
   //   setAddState(!addState) // 여기서 금방 안바뀌네? 
   // }
-  
   const handleAddBtn = () => {
     setAddState((addState) => {return !addState})      // 바로 변경이 안되네.. 계속.. 
   }
-
+  // 여기에 문제가 있는거같은데. 이거 그대로 써서. ,,, 삭제하고 남는거..  아닌가.. 삭제했을때의 데이터가 남는이유가 뭘까 대체.. 
   const certificateDataslist = certificateDatas.map((certificateData, i) => 
       <div key={i}>    
-        <CertificatePiece index={i} id={certificateData.id} title={certificateData.title} organization={certificateData.organization} date={certificateData.date} userId={userId} isLoggedUser={isLoggedUser} certificateDatas={certificateDatas} setCertificateDatas={setCertificateDatas}/>
+        <CertificatePiece 
+        index={i} 
+        id={certificateData.id} 
+        title={certificateData.title} 
+        organization={certificateData.organization} 
+        date={certificateData.date} 
+        userId={userId} 
+        isLoggedUser={isLoggedUser} 
+        certificateDatas={certificateDatas} 
+        setCertificateDatas={setCertificateDatas}
+        editState={editState}
+        setEditState={setEditState}/>
       </div>
     );
 
@@ -166,7 +204,12 @@ const Certificate = ({userId, isLoggedUser}) => {
       <h3>자격증</h3>
       {certificateDatas && certificateDataslist}
       {(userId === isLoggedUser) && !addState ? <button onClick={handleAddBtn}>자격증 추가하기</button> : null}
-      <NewCertificate addState={addState} setAddState={setAddState} userId={userId} setCertificateDatas={setCertificateDatas} certificateDatas={certificateDatas} />
+      <NewCertificate 
+      addState={addState} 
+      setAddState={setAddState} 
+      userId={userId} 
+      setCertificateDatas={setCertificateDatas} 
+      certificateDatas={certificateDatas} />
     </StyledCertificate>
   )
 }

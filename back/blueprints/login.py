@@ -16,7 +16,6 @@ def login():
             return jsonify(data = {'user_id': user.user_id})
 
         return jsonify('존재하지않는 아이디이거나 비밀번호가 일치하지 않습니다.')
-    
-    # # 로그인 페이지 구현 필요하나? 데이터 받아올 때. 음.. 로그인데이터를 받아올 일이 있나..? 로그인 페이지? 여기서? 굳이?
-    # print(session['login'])
-    # return jsonify(data = {'user_id':session['login']})
+
+    print(session.items())
+    return jsonify(data = {'user_id':session['login']})

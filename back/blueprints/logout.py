@@ -6,7 +6,7 @@ Logout = Blueprint('Logout', __name__)
 def logout():
     try:  # try로 일단 에러 통과시켜서 CORS에러가 없는걸 보니, CORS문제가 아니라, 세션 키 문제가 맞네. 
         print('session loading..')
-        print('session access succeed', session['login'])
+        print('session access succeed', session.get('login'))
     except:
         print('session access fail')
     session.clear()

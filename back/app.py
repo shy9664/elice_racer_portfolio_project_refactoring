@@ -26,7 +26,14 @@ def create_app():
 
   db.init_app(app)
 
-  CORS(app)  # , supports_credentials=True 와는 무관한것같은데.. 
+  CORS(app, supports_credentials=True)  # 프론트에서 withCredential했을 때 
+                                        # 여기서 support_credentials 안해주면 cors에러나는데
+                                        # 일단 이렇게 해결되긴하네. 
+                                        # 근데 뭐.. 프론트에서 withCredential 안했을 때 여기서도 안해주면
+                                        # cors에러 안났었음.. 당장에는 session file error가 문제.. 
+                                        # 아.. 이거는 그냥,, 프론트에서 withCredential했으면 꼭 해줘야하는건가본데..? 
+                                        # 만약 프론트에서 안했으면 해도 되고 안해도 되는거고. 
+                                        # 당장은 cors에러가 없어서 이렇게 생각하는 걸지도..? 
 
   app.register_blueprint(Login)
   app.register_blueprint(Register)

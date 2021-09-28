@@ -50,5 +50,4 @@ def certificates():
             'organization': data.organization,
             'date': data.date
             })
-        print(len(datas))
         return jsonify(data = datas)

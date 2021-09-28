@@ -12,6 +12,7 @@ def login():
         
         if user :
             session['login'] = user.user_id
+            print('back', session['login'])
             return jsonify(data = {'user_id': user.user_id})
 
         return jsonify('존재하지않는 아이디이거나 비밀번호가 일치하지 않습니다.')

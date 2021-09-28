@@ -5,7 +5,8 @@ const logout = async () => {
     
     const url = `${BACKEND_URL}/logout`;
     
-    await axios.get(url);
+    const res = await axios.get(url);
+    console.log(res.data)
 }
 
 export default logout;

@@ -9,6 +9,8 @@ def logout():
         print('session access succeed', session.get('login'))
     except:
         print('session access fail')
+    print(session.items())
     session.clear()
+    print(session.items())
     # 여기에, 'session['login']'님의 로그아웃을 완료하였습니다를 응답으로 하게끔 하고싶은데. 
     return jsonify('로그아웃을 완료하였습니다')

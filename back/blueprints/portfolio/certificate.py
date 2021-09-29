@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from models.certificate import Certificate
 from db_connect import db
 
@@ -41,7 +41,7 @@ def certificates():
     else:
         user_id = request.args['id']
         stored_certificate = Certificate.query.filter(Certificate.user_id == user_id).all()
-
+        print('cert get session check', session.items())
         datas = [] 
         for data in stored_certificate:
             datas.append({

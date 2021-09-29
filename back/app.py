@@ -20,9 +20,11 @@ def create_app():
   
   app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@127.0.0.1:3306/racer_portfolio'
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-  app.config['SESSION_TYPE'] = 'filesystem'
+  # app.config['SESSION_TYPE'] = 'filesystem'
   app.secret_key = 'adhadghagdh'
-  Session(app)
+  # app.config['SESSION_COOKIE_SAMESITE'] = "None"
+  # app.config['SESSION_COOKIE_SECURE'] = "true"
+  # Session(app)
 
   db.init_app(app)
 

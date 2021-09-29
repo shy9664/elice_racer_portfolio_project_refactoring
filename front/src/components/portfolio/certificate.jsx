@@ -74,8 +74,7 @@ const CertificatePiece = ({index, id, title, organization, date, userId, isLogge
   const [editedCertificateData, setEditedCertificateData] = useState({id, title, organization, date}); // id도 넣어줘야함 !! 지못미 내로직..
   const [oneEditedState, setOneEditedState] = useState(true);
   const [alive, setAlive] = useState(true);
-
-  console.log(editedCertificateData)    // 아 찾았다. 이게 문제다. 이거때문에 계속 그.. 이전것으로 편집데이터가 유지된다. 그리고.. 그 상태도. 
+                                        // 아 찾았다. 이게 문제다. 이거때문에 계속 그.. 이전것으로 편집데이터가 유지된다. 그리고.. 그 상태도. 
                                         // unmounted component 문제인가? 근데 애초에.. 음.. unmount되는거같지가않은데.. 음..? 아닌가?.,.
                                         // 근데 애초에 음 .. 재렌더링이 제대로 작동한다면.. 관계없어야할 문제아닌가?
                                         // 근데 사실 재렌더링은 제대로 되거든.. 

@@ -14,7 +14,7 @@ def login():
             session['login'] = user.user_id
             return jsonify(data = {'user_id': session['login']})
 
-        return jsonify('존재하지않는 아이디이거나 비밀번호가 일치하지 않습니다.')
+        return jsonify('존재하지않는 아이디이거나 비밀번호가 일치하지 않습니다')  
 
     print(session.items())
     return jsonify(data = {'user_id':session['login']})

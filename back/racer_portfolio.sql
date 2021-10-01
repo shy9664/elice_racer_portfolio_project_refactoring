@@ -5,7 +5,7 @@ USE racer_portfolio;
 CREATE TABLE `user` (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` VARCHAR(20) NOT NULL UNIQUE, 
-    `user_pw` VARCHAR(20) NOT NULL,
+    `user_pw` VARCHAR(255) NOT NULL,
     `name` VARCHAR(10) NOT NULL
 );
 

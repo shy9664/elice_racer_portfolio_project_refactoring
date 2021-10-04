@@ -8,7 +8,7 @@ const login = async (loginForm) => {
     form.append('user_id', loginForm.userId)
     form.append('user_pw', loginForm.userPw)
     
-    const res = await axios.post(url, form, {withCredentials:true});
+    const res = await axios.post(url, form);
 
     return res.data.data.user_id
 }
